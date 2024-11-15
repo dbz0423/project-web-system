@@ -105,7 +105,7 @@ public class SysUserController {
     public ResultVo<?> resetPassword(@RequestBody SysUser sysUser) {
         UpdateWrapper<SysUser> query = new UpdateWrapper<>();
         query.lambda().eq(SysUser::getUserId, sysUser.getUserId())
-                .set(SysUser::getPassword,"666666");
+                .set(SysUser::getPassword, "666666");
         if (sysUserService.update(query)) {
             return ResultUtils.success("密码重置成功!");
         }
@@ -174,8 +174,8 @@ public class SysUserController {
         vo.setUserId(one.getUserId());
         vo.setNickName(one.getNickName());
         // 生成token
-        Map<String,String> map = new HashMap<>();
-        map.put("userId",Long.toString(one.getUserId()));
+        Map<String, String> map = new HashMap<>();
+        map.put("userId", Long.toString(one.getUserId()));
         String token = jwtUtils.generateToken(map);
         vo.setToken(token);
         return ResultUtils.success("登录成功", vo);
@@ -218,4 +218,20 @@ public class SysUserController {
         return ResultUtils.success("查询成功", userInfo);
     }
 
+    //修改密码
+    @PostMapping("/updatePassword")
+    @Operation(summary = "修改密码")
+    public ResultVo<?> updatePassword(@RequestBody UpdatePasswordParm parm) {
+        SysUser user = sysUserService.getById(parm.getUserId());
+        if (!parm.getOldPassword().equals(user.getPassword())) {
+            return ResultUtils.error("原密码不正确!");
+        }
+        //更新条件
+        UpdateWrapper<SysUser> query = new UpdateWrapper<>();
+        query.lambda().set(SysUser::getPassword, parm.getPassword()).eq(SysUser::getUserId, parm.getUserId());
+        if (sysUserService.update(query)) {
+            return ResultUtils.success("密码修改成功!");
+        }
+        return ResultUtils.error("密码修改失败!");
+    }
 }
