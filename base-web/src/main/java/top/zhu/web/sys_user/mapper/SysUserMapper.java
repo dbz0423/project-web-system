@@ -8,6 +8,4 @@ import top.zhu.web.sys_user.entity.SysUser;
 import java.util.List;
 
 public interface SysUserMapper extends BaseMapper<SysUser> {
-    // 根据用户id查询菜单
-    SysUser selectById(@Param("userId") Long userId);
 }
